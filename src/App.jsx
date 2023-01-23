@@ -46,15 +46,6 @@ export default function App() {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
 
-  // Handle Drawer function
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   return (
     <AuthContextProvider>
       <Router>

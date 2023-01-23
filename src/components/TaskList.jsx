@@ -22,6 +22,8 @@ export default function TaskList() {
   const [successFlag, setSuccessFlag] = useState(false);
   const { authData } = useContext(AuthContext);
 
+  console.log("AUTH DATA: ", authData);
+
   // iterate all taskData
   // if status === 1 push the id to checked
 
@@ -168,75 +170,82 @@ export default function TaskList() {
           Task added — <strong>SUCCESSFULLY!</strong>
         </Alert>
       )}
+      {authData === null && (
+        <Alert severity="warning">
+          <AlertTitle>WARNING</AlertTitle>
+          Please login First
+        </Alert>
+      )}
+      {authData && (
+        <div>
+          <Box
+            onSubmit={handleAddTask}
+            component="form"
+            noValidate
+            autoComplete="off"
+          >
+            <TextField
+              label="New Task"
+              id="textfield"
+              sx={{ width: "100%" }}
+              onInput={handleInput}
+              onFocus={() => {
+                setSuccessFlag(false);
+              }}
+              value={taskInput}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Button type="submit" variant="contained">
+                      Add
+                    </Button>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+          {/* LIST */}
+          <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+            {taskData !== null &&
+              taskData.map((value) => {
+                const labelId = `checkbox-list-label-${value._id}`;
 
-      {/* FORM INPUT */}
-      <Box
-        onSubmit={handleAddTask}
-        component="form"
-        noValidate
-        autoComplete="off"
-      >
-        {/* Input field */}
-        <TextField
-          label="New Task"
-          id="textfield"
-          sx={{ width: "100%" }}
-          onInput={handleInput}
-          onFocus={() => {
-            setSuccessFlag(false);
-          }}
-          value={taskInput}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <Button type="submit" variant="contained">
-                  Add
-                </Button>
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Box>
-      {/* LIST */}
-      <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-        {taskData !== null &&
-          taskData.map((value) => {
-            const labelId = `checkbox-list-label-${value._id}`;
-
-            return (
-              <ListItem
-                key={value._id}
-                secondaryAction={
-                  <IconButton
-                    edge="end"
-                    aria-label="comments"
-                    onClick={() => handleDelete(value._id)}
+                return (
+                  <ListItem
+                    key={value._id}
+                    secondaryAction={
+                      <IconButton
+                        edge="end"
+                        aria-label="comments"
+                        onClick={() => handleDelete(value._id)}
+                      >
+                        <DeleteForeverIcon />
+                      </IconButton>
+                    }
+                    disablePadding
                   >
-                    <DeleteForeverIcon />
-                  </IconButton>
-                }
-                disablePadding
-              >
-                <ListItemButton
-                  role={undefined}
-                  onClick={() => handleToggle(value)}
-                  dense
-                >
-                  <ListItemIcon>
-                    <Checkbox
-                      edge="start"
-                      checked={checked.indexOf(value._id) !== -1}
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{ "aria-labelledby": labelId }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText id={labelId} primary={value.description} />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-      </List>
+                    <ListItemButton
+                      role={undefined}
+                      onClick={() => handleToggle(value)}
+                      dense
+                    >
+                      <ListItemIcon>
+                        <Checkbox
+                          edge="start"
+                          checked={checked.indexOf(value._id) !== -1}
+                          tabIndex={-1}
+                          disableRipple
+                          inputProps={{ "aria-labelledby": labelId }}
+                        />
+                      </ListItemIcon>
+                      <ListItemText id={labelId} primary={value.description} />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+          </List>
+        </div>
+      )}
     </>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
@@ -20,6 +20,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import MuiAppBar from "@mui/material/AppBar";
 import { styled, useTheme } from "@mui/material/styles";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const drawerWidth = 240;
 
@@ -52,6 +53,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 export default function Header() {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+  const { authData } = useContext(AuthContext);
 
   // Handle Drawer function
   const handleDrawerOpen = () => {
@@ -60,6 +62,11 @@ export default function Header() {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    window.location.href = "http://127.0.0.1:5173/";
   };
   return (
     <>
@@ -106,7 +113,7 @@ export default function Header() {
         <List>
           <ListItem key={"My Task"} disablePadding>
             <Link to="/">
-              <ListItemButton>
+              <ListItemButton onClick={handleDrawerClose}>
                 <ListItemIcon>
                   <FormatListNumberedIcon />
                 </ListItemIcon>
@@ -114,34 +121,49 @@ export default function Header() {
               </ListItemButton>
             </Link>
           </ListItem>
-          <ListItem key={"Register"} disablePadding>
-            <Link to="/register">
-              <ListItemButton>
+          {authData === null && (
+            <>
+              <ListItem key={"Register"} disablePadding>
+                <Link to="/register">
+                  <ListItemButton onClick={handleDrawerClose}>
+                    <ListItemIcon>
+                      <AppRegistrationIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={"Register"} />
+                  </ListItemButton>
+                </Link>
+              </ListItem>
+              <ListItem
+                key={"Login"}
+                disablePadding
+                onClick={handleDrawerClose}
+              >
+                <Link to="/login">
+                  <ListItemButton>
+                    <ListItemIcon>
+                      <LoginIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={"Login"} />
+                  </ListItemButton>
+                </Link>
+              </ListItem>
+            </>
+          )}
+          {authData && (
+            <ListItem key={"Logout"} disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  handleLogout();
+                  handleDrawerClose();
+                }}
+              >
                 <ListItemIcon>
-                  <AppRegistrationIcon />
+                  <LogoutIcon />
                 </ListItemIcon>
-                <ListItemText primary={"Register"} />
+                <ListItemText primary={"Logout"} />
               </ListItemButton>
-            </Link>
-          </ListItem>
-          <ListItem key={"Login"} disablePadding>
-            <Link to="/login">
-              <ListItemButton>
-                <ListItemIcon>
-                  <LoginIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Login"} />
-              </ListItemButton>
-            </Link>
-          </ListItem>
-          <ListItem key={"Logout"} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Logout"} />
-            </ListItemButton>
-          </ListItem>
+            </ListItem>
+          )}
         </List>
       </Drawer>
     </>
